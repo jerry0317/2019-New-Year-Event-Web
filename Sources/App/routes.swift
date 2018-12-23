@@ -1,16 +1,21 @@
 import Vapor
+import Leaf
 
 /// Register your application's routes here.
 public func routes(_ router: Router) throws {
     // Basic "It works" example
     router.get { req in
-        return "Welcome to SMS New Year Event 2019!"
+        return try req.view().render("index")
     }
     
-    // Basic "Hello, world!" example
-    router.get("hello") { req in
-        return "Hello, world!"
-    }
+    let testC = TestController()
+    
+    router.get("test", use: testC.hello)
+    
+//    // Basic "Hello, world!" example
+//    router.get("hello") { req -> Future<View> in
+//        return try req.view().render("index")
+//    }
 
     // Example of configuring a controller
     let todoController = TodoController()
