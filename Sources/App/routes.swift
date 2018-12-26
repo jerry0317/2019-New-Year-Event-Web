@@ -1,9 +1,7 @@
 import Vapor
 import Leaf
 
-/// Register your application's routes here.
 public func routes(_ router: Router) throws {
-    // Basic "It works" example
     router.get { req in
         return try req.view().render("index")
     }
@@ -12,14 +10,20 @@ public func routes(_ router: Router) throws {
     
     router.get("test", use: testC.hello)
     
-//    // Basic "Hello, world!" example
-//    router.get("hello") { req -> Future<View> in
-//        return try req.view().render("index")
-//    }
-
-    // Example of configuring a controller
-    let todoController = TodoController()
-    router.get("todos", use: todoController.index)
-    router.post("todos", use: todoController.create)
-    router.delete("todos", Todo.parameter, use: todoController.delete)
+    router.get("sql") { req in
+        return Comment.query(on: req).all()
+    }
+    
+    struct CommentRequest: Content {
+        var content: String
+        var longitude: Double
+        var latitude: Double
+        var altitude: Double?
+    }
+    
+    router.post(CommentRequest.self, at: "postcomment") { req, comm -> Future<Comment> in
+        let comment = Comment(content: comm.content, location: Location(comm.longitude, comm.latitude, comm.latitude))
+        return comment.create(on: req)
+    }
+    
 }
